@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "nodemon --watch \"src/\" --exec \"ts-node serve.ts\" -e ts"
+    
   },
   "dependencies": {
     "nodemon": "^2.0.4",

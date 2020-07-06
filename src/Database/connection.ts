@@ -1,39 +1,33 @@
-import mongoose from 'mongoose';
+import mongoose, { Mongoose } from 'mongoose';
 
 class Database {
 
     private mongo = mongoose;
+
     constructor() {
         this.conn();
     }
 
-    public async schema() {
+    private conn(): Promise<typeof mongoose> {
+        console.log('[DATABASE => conn()] connection database');
         
-        const Schema = new this.mongo.Schema({
-            email:{
-                type: String,
-                unique: true,
-                required: true
-            },
-            password: {
-                type: String,
-                unique: true,
-                required: true
-            }
-        });
-
-        return this.mongo.model("users", Schema); 
-        
-    }
-
-    private conn() {
-        return this.mongo.createConnection('mongodb://localhost:27017/teste',{
+        return this.Conn.connect('mongodb://localhost:27017/helloworld', {
             useNewUrlParser: true,
             useCreateIndex: true,
             useUnifiedTopology: true
         });
+
     }
+
+    public get Conn(): Mongoose {
+        return this.mongo;
+    }
+    
+    public set Conn(mongo: Mongoose) {
+        this.mongo = mongo;
+    }
+
 
 }
 
-export default new Database();
+export default new Database().Conn;

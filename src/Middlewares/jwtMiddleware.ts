@@ -1,11 +1,15 @@
 import jsonwebtoken from 'jsonwebtoken';
 import secret from '../secret/secret';
 
+interface IToken{
+    password: String
+    email: String
+}
 
 class Cookie {
 
 
-    public signMiddleware(obj: any) {
+    public signMiddleware(obj: IToken) {
         const token = jsonwebtoken.sign(
         {
             email: obj.email,

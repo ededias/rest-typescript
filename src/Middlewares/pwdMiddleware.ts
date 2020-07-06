@@ -2,7 +2,13 @@ import bcrypt from 'bcryptjs';
 
 class Hash {
 
-    public async hashPassword(password: any) {
+
+    constructor() {
+        this.hashPassword;
+        this.comparePassword;
+    }
+
+    public async hashPassword(password: string) {
         console.log(password)
         const hash: String = await bcrypt.hash(password, 10);
         console.log(hash);
