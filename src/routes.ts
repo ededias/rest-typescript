@@ -15,7 +15,7 @@ class Routes {
         this.middlewares();
         this.routes();
     }
-    public routes(): void {
+    private routes() {
         
         this.Express.get('/', this.userController.get);
 

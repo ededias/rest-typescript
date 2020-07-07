@@ -14,13 +14,6 @@ class UserController {
     private cookie = cookie;
     private hash = hash;
     // private userModel = UserModel;
-    // constructor() {
-    //     // this.cookie
-    //     // this.hash
-    //     // this.get;
-    //     // this.po  st;
-    //     // this.token;
-    // }
 
     public async get(_: Request, res: Response) {
 
@@ -31,8 +24,8 @@ class UserController {
         // });
         
         const result = await UserModel.findUser();
-        
-        return res.status(200).json(result);
+        console.log(result)
+        return res.send(result);
 
 
     }

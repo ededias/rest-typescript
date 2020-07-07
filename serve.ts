@@ -1,5 +1,7 @@
 import route from './src/routes';
 
-route.listen(3333, () => {
+const port = 3333;
+
+route.listen(port, () => {
     console.log("[SERVER] rurning at http://localhost:3333");
 })

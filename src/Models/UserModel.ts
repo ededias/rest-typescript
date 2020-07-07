@@ -1,5 +1,6 @@
-import Database from '../Database/connection';
+import Connection from '../Database/Connection';
 import { Model, Document } from 'mongoose';
+
 
 interface ISaveUser {
     password: String
@@ -8,13 +9,15 @@ interface ISaveUser {
 
 class UserModel {
 
-    private connection = Database;
-
-    private schema(): Model<Document, {}> {
-
-        console.log('[USER => schema()] before const schema');
+    // private connection = Connection;
+    private schemaModel: Model<Document, {}>;
+    constructor(){
+        this.schemaModel = this.schema()
+    }
+    public schema(): Model<Document, {}> {
         
-        const userSchema = new this.connection.Schema({
+        console.log('[USER => schema()] before const schema');
+        const userSchema = new Connection.Schema({
             email: {
                 type: String,
                 unique: true,
@@ -24,29 +27,36 @@ class UserModel {
                 type: String,
                 unique: true,
                 required: true
+            },
+            created_at: {
+                type: Date,
+                default: Date.now()
             }
         });
+
         try {
-            return this.connection.model('usuarios', userSchema);
+            
+            return Connection.model('usuarios', userSchema);
+
         } catch (err) {
+
             console.log(`[ERROR => schema()] => ${err}`);
             return err;
+
         }
 
     }
 
-
     public async findUser() {
-        const result = await this.schema().find();
+        
         try {
             console.log('[USER => findUser()] line 50');
-            
-            if (result) {
+            const result = await this.schemaModel.find({});
 
+            if (result) {
                 return result;
             } else {
-                console.log(result);
-                return "erro";
+                return "users not afound";
             }
 
         } catch (err) {
@@ -59,7 +69,7 @@ class UserModel {
 
         try {
 
-            return this.schema().create(obj);
+            return this.schemaModel.create(obj);
         } catch (err) {
             return err;
         };
