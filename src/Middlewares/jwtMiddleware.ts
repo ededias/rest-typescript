@@ -2,8 +2,8 @@ import jsonwebtoken from 'jsonwebtoken';
 import secret from '../secret/secret';
 
 interface IToken{
-    password: String
-    email: String
+    name?: string,
+    email?: string
 }
 
 class Cookie {
@@ -13,7 +13,7 @@ class Cookie {
         const token = jsonwebtoken.sign(
         {
             email: obj.email,
-            password: obj.password
+            name: obj.name
 
         },
         secret.secret,
@@ -24,9 +24,9 @@ class Cookie {
         return token;
     }
 
-    public verifyMiddleware(token: any) {
+    public verifyMiddlewareJWT(cookie: string) {
         
-        const verify = jsonwebtoken.verify(token, secret.secret);
+        const verify = jsonwebtoken.verify(cookie, secret.secret);
         return verify;
 
     }

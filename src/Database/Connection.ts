@@ -11,7 +11,7 @@ class Connection {
 
     public async conn() {
         console.log('[DATABASE => conn()] connection database');
-        const uri = 'mongodb://localhost:27017/helloworld'
+        const uri = 'mongodb://localhost:27017/spotify_clone'
         const options = {
             useNewUrlParser: true,
             useCreateIndex: true,

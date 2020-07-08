@@ -2,47 +2,64 @@ import { Response, Request } from 'express';
 
 
 import hash from '../Middlewares/pwdMiddleware';
-import cookie from '../Middlewares/jwtMiddleware';
+import Cookie from '../Middlewares/jwtMiddleware';
 
 
 import UserModel from '../Models/UserModel';
 
+interface IReq {
+    email: string,
+    password: string,
+    name: string
+}
 
 class UserController {
 
 
-    private cookie = cookie;
-    private hash = hash;
+    // private cookie = cookie;
+    // private hash = hash;
     // private userModel = UserModel;
 
-    public async get(_: Request, res: Response) {
+    public async get(req: Request, res: Response) {
 
-        // const email = "ededias4@gmail.com";
-        // res.cookie('mycookie', this.cookie.signMiddleware(email), {
-        //     'maxAge': 9000,
-        //     'httpOnly': true
-        // });
+        const email = {
+            email: "ededias4@gmail.com", 
+            password: "$2a$10$61XQlR2s2XITFXrJwDPfp.qWiKwTYSSG3LKw8lO/kmdAiJvJjKn4O"
+        }
+        res.cookie('mycookie', Cookie.signMiddleware(email), {
+            'maxAge': 9000,
+            'httpOnly': true
+        }); 
         
         const result = await UserModel.findUser();
-        console.log(result)
-        return res.send(result);
+        const resultado = {
+            cookie: req.cookies,
+            result: result
+        }
+        return res.send(resultado);
 
 
     }
 
     public async post(req: Request, res: Response) {
 
-
-        const { password, email } = req.body;
+        const { password, email, name } : IReq = req.body;
         const pwd: String = await hash.hashPassword(password);
 
-        const objJwt = {
+        const objectUserData = {
             email: email,
+            name: name,
             password: pwd
         }
-        const result = cookie.signMiddleware(objJwt);
+        const objJWT = {
+            email: email,
+            name: name,
+        }
+        console.log(objectUserData);
+        const response = await UserModel.insertUser(objectUserData);
+        const result = Cookie.signMiddleware(objJWT);
         
-        const response = UserModel.insertUser(objJwt);
+        
 
         try {
 
@@ -64,21 +81,22 @@ class UserController {
 
     public async token(req: Request, res: Response) {
 
-
-        const result = this.cookie.verifyMiddleware(req.body.token);
-        const response = await this.hash.comparePassword(req.body.password, '$2a$10$5HWqLQDLcPRUGiUjc20Fl.SEal/D5Qh0SMPuHvtlxhAkBQtRMVA0i');
-       
+        const cookies: string = req.body.authCookie;
+        console.log(req.cookies)
+        
+        const result = Cookie.verifyMiddlewareJWT(cookies);
+        const findUserOne = await UserModel.findUserOne(req.body);
+        const response = await hash.comparePassword(req.body.password, findUserOne.password);
+        findUserOne.password = undefined;
         if (response) {
             return res.status(200).json({
                 result: result,
-                email: req.body.email,
-                pwd: req.body.password
+                findUserOne
             });
         } else {
             return res.status(400).json({err: "user or password wrong"});
         }
         
-
     }
 
 

@@ -2,10 +2,11 @@ import Connection from '../Database/Connection';
 import { Model, Document } from 'mongoose';
 
 
-interface ISaveUser {
-    password: String
-    email: String
-}
+// interface ISaveUser {
+//     password: String,
+//     name: String,
+//     email: String
+// }
 
 class UserModel {
 
@@ -23,10 +24,15 @@ class UserModel {
                 unique: true,
                 required: true
             },
+            name:{
+                type: String,
+                required: true
+            },
             password: {
                 type: String,
                 unique: true,
-                required: true
+                required: true,
+                select: false
             },
             created_at: {
                 type: Date,
@@ -36,7 +42,7 @@ class UserModel {
 
         try {
             
-            return Connection.model('usuarios', userSchema);
+            return Connection.model('users', userSchema);
 
         } catch (err) {
 
@@ -47,10 +53,29 @@ class UserModel {
 
     }
 
+
+    public async findUserOne(userData: any) {
+
+        console.log('[USERMODEL => findUserOne()] => execute method to find user pre signed');
+        try {
+            const { email } = userData;
+            const result = await this.schemaModel.findOne({email}).select('+password');
+            if(result) {
+                return result;
+            } else {
+                return "user not afound"
+            }
+        } catch (error) {
+            return error;
+        }
+
+    }
+
     public async findUser() {
         
         try {
             console.log('[USER => findUser()] line 50');
+            
             const result = await this.schemaModel.find({});
 
             if (result) {
@@ -65,11 +90,15 @@ class UserModel {
         }
     }
 
-    public async insertUser(obj: ISaveUser) {
+    public async insertUser(obj: any) {
 
         try {
 
-            return this.schemaModel.create(obj);
+            return await this.schemaModel.create({
+                name: obj.name,
+                email: obj.email,
+                password: obj.password
+            });
         } catch (err) {
             return err;
         };
